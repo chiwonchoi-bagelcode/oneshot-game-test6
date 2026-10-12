@@ -47,7 +47,7 @@
     } else app.classList.remove('framed');
     app.style.width = W + 'px'; app.style.height = H + 'px';
     view.W = W; view.H = H;
-    view.dpr = Math.min(3, window.devicePixelRatio || 1);
+    view.dpr = Math.min(2, window.devicePixelRatio || 1);
     canvas.width = Math.round(W * view.dpr); canvas.height = Math.round(H * view.dpr);
     canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
     view.panelH = Math.round(Math.max(168, Math.min(230, H * 0.27))) + view.safeB;
@@ -308,7 +308,7 @@
     { id: 'push', lv: 1, when: (g) => g.taps === 0, done: (g) => g.taps > 1,
       text: '<b class="m">왼다리</b>를 눌러 보세요. 디딘 발은 붙어 있고, 다리가 늘어나 <b>몸을 발 반대쪽</b>으로 밀어요.' },
     { id: 'share', lv: 1, when: (g) => g.taps >= 1 && g.char.support === 2 && !anySwitchReady(g), done: (g) => anySwitchReady(g) || g.char.support === 1,
-      text: '동력액은 함께 써요. 한쪽이 늘면 <b>다른 다리는 줄어요</b>. 몸통 아래 <b>추</b>가 오른발을 넘어가게 계속 밀어 보세요.' },
+      text: '동력액은 함께 써요. 한쪽이 늘면 <b>다른 다리는 줄어요</b>. 몸통 아래 <b>추</b>가 <b>앞발</b>을 넘어가게 <b>뒷다리</b>로 계속 밀어 보세요.' },
     { id: 'switch', lv: 1, when: (g) => anySwitchReady(g), done: (g) => g.char.support === 1,
       text: '추가 앞발을 넘었어요! 이제 그 <b>앞발</b>을 누르면 그 발로 <b>갈아타고</b>, 뒷다리는 접혀서 동력액이 골반으로 돌아가요.' },
     { id: 'reach', lv: 1, when: (g) => g.char.support === 1 && g.char.legs.some((L) => !L.planted), done: (g) => g.char.support === 2,
@@ -654,15 +654,26 @@
     SND.setDanger(slide, creak);
   }
 
-  // simple idle demo for the title: sways and taps occasionally
+  // title-screen demo: a calm walker (push with the back leg, switch, reach)
   let demoT = 0;
   function demoAI(dt) {
     demoT += dt;
-    if (demoT > 1.4) {
-      demoT = 0;
-      const c = demo.char;
-      if (c.support === 2) S.tap(demo, c.legs[0].f > 7 ? 1 : 0);
-      else S.tap(demo, c.legs[0].planted ? 1 : 0);
+    const c = demo.char;
+    if (demo.state !== 'play' || c.P.x > 1300) { makeDemo(); return; }
+    if (demoT < 0.75) return;
+    demoT = 0;
+    if (c.support === 2) {
+      const front = c.legs[0].foot.x > c.legs[1].foot.x ? 0 : 1, back = 1 - front;
+      const eq = S.twoFootEq(c, c.legs[0].f, c.legs[1].f) || c.P;
+      const past = eq.x - c.legs[front].foot.x;
+      const pv = S.tapPreview(demo, back);
+      S.tap(demo, past > 22 || pv.kind === 'release' || pv.kind === 'full' ? front : back);
+    } else {
+      const Fi = c.legs[0].planted ? 1 : 0, F = c.legs[Fi], Sp = c.legs[1 - Fi];
+      const tg = F.target;
+      const good = tg && !tg.none && tg.x > Sp.foot.x + 40;
+      const canPush = S.tapPreview(demo, Sp.side).kind === 'push' && F.f > 0;
+      S.tap(demo, good || !canPush ? Fi : Sp.side);
     }
   }
 

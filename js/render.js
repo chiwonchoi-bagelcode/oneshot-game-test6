@@ -516,6 +516,24 @@
       ctx.fillStyle = 'rgba(255,255,255,0.7)';
       ctx.beginPath(); ctx.arc(p.x - r * 0.35, p.y - r * 0.35, r * 0.3, 0, Math.PI * 2); ctx.fill();
     }
+    // force arrows: a fed, planted leg pushes from the shoe toward the pelvis
+    if (L.planted && L.pushT > 0) {
+      const a = Math.min(1, L.pushT / 0.2);
+      for (let j = 0; j < 2; j++) {
+        const tt = 0.72 - j * 0.22 - (0.35 - L.pushT) * 0.6;
+        if (tt < 0.1 || tt > 0.9) continue;
+        const p = qpt(q, tt), p2 = qpt(q, tt - 0.02);
+        const ang = Math.atan2(p2.y - p.y, p2.x - p.x);
+        ctx.save();
+        ctx.globalAlpha = a;
+        ctx.translate(p.x, p.y); ctx.rotate(ang);
+        ctx.strokeStyle = COL.ink; ctx.lineWidth = 6.5; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(-5, -9); ctx.lineTo(4, 0); ctx.lineTo(-5, 9); ctx.stroke();
+        ctx.strokeStyle = '#fff'; ctx.lineWidth = 3.5;
+        ctx.beginPath(); ctx.moveTo(-5, -9); ctx.lineTo(4, 0); ctx.lineTo(-5, 9); ctx.stroke();
+        ctx.restore();
+      }
+    }
     ctx.restore();
     drawShoe(ctx, c, L, q, far, fx);
     return q;
