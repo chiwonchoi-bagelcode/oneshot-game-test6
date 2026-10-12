@@ -28,7 +28,7 @@
     liftEps: 0.04,
     maxMirror: 1.2,
     aimRate: 9, swingCost: 4, swingSteps: 2,
-    extendRate: 13,
+    extendRate: 24,
     // torso
     leanScale: 170, thetaMax: 0.62,
     kTheta: 60, cTheta: 8.5, jTheta: 0.0011,
