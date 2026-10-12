@@ -30,10 +30,10 @@
         { x: -240, y: 0, w: 390, kind: 'biscuit' },
         { x: 210, y: 0, w: 110, kind: 'choco' },
         { x: 400, y: 0, w: 110, kind: 'biscuit' },
-        { x: 645, y: 0, w: 290, kind: 'table' },
+        { x: 628, y: 0, w: 290, kind: 'table' },
       ],
       checkpoints: [{ id: 'c1', x0: 400, x1: 510 }],
-      goal: { x0: 675, x1: 905, y: 0 },
+      goal: { x0: 658, x1: 890, y: 0 },
     },
     {
       id: 3,
