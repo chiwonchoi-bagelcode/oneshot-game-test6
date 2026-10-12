@@ -7,7 +7,7 @@ const BEAM = parseInt(process.argv[3] || '200');
 const PAUSE = parseFloat(process.argv[4] || '0.45');
 const MAXD = parseInt(process.argv[5] || '160');
 for (const k of Object.keys(process.env)) if (k.startsWith('CFG_')) S.CFG[k.slice(4)] = parseFloat(process.env[k]);
-const def = JSON.parse(JSON.stringify(LEVELS.find((l) => l.id === id)));
+const def = process.env.LEVEL_JSON ? JSON.parse(require('fs').readFileSync(process.env.LEVEL_JSON, 'utf8')) : JSON.parse(JSON.stringify(LEVELS.find((l) => l.id === id)));
 if (process.env.FLUID) def.start.fluid = process.env.FLUID.split(',').map(Number);
 if (process.env.POOL) def.start.pool = parseInt(process.env.POOL);
 const root = S.createGame(def);

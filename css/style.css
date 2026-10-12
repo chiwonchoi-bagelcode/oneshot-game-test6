@@ -15,6 +15,7 @@ html, body {
   background-image: radial-gradient(circle at 20% 20%, #ffe6d3 0, transparent 40%), radial-gradient(circle at 80% 70%, #ffd7e0 0, transparent 45%);
   font-family: var(--font); color: var(--ink);
   user-select: none; -webkit-user-select: none; touch-action: none;
+  overscroll-behavior: none; -webkit-touch-callout: none;
 }
 #safe-probe { position: fixed; visibility: hidden; padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
 #app {
@@ -108,4 +109,20 @@ button.small { font-size: 15px; padding: 7px 10px; flex: 1; }
   20% { transform: translate(-50%, -50%) scale(1) rotate(0); }
   80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
   100% { opacity: 0; transform: translate(-50%, -60%) scale(0.95); }
+}
+
+@media (max-height: 720px) {
+  .logo span { font-size: 40px; }
+  .logo .l2 { font-size: 46px; }
+  .tag { font-size: 14px; }
+  #overlay.title { padding-top: 5%; }
+  #overlay.title .col { gap: 7px; bottom: 3%; }
+  #overlay.title button { padding: 7px 12px; font-size: 16px; }
+  #overlay.title button.big { font-size: 19px; padding: 9px 12px; }
+  #overlay.panel h2 { font-size: 22px; padding: 10px 8px 6px; }
+  #overlay.panel .why, #overlay.panel ul { font-size: 14px; }
+  #overlay.panel ul { font-size: 13px; }
+  .col { gap: 7px; }
+  button { padding: 7px 12px; font-size: 16px; }
+  button.big { font-size: 19px; }
 }

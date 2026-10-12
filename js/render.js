@@ -903,10 +903,12 @@
     ctx.setLineDash([3, 4]);
     ctx.beginPath(); ctx.moveTo(c.P.x, c.P.y + 15); ctx.lineTo(c.P.x, endY - 9); ctx.stroke();
     ctx.setLineDash([]);
-    // bob
-    const by = Math.min(endY - 9, c.P.y + 15 + 34);
+    // bob (a little brass plumb weight hanging from the pelvis)
+    const by = Math.min(endY - 12, c.P.y + 15 + 34);
+    ctx.fillStyle = bad ? col : '#e2b04a';
+    ctx.strokeStyle = COL.ink; ctx.lineWidth = 1.4;
+    ctx.beginPath(); ctx.moveTo(c.P.x, by + 11); ctx.quadraticCurveTo(c.P.x + 6.5, by + 3, c.P.x, by - 3); ctx.quadraticCurveTo(c.P.x - 6.5, by + 3, c.P.x, by + 11); ctx.fill(); ctx.stroke();
     ctx.fillStyle = col;
-    ctx.beginPath(); ctx.moveTo(c.P.x, by + 9); ctx.quadraticCurveTo(c.P.x + 5, by + 2, c.P.x, by - 2); ctx.quadraticCurveTo(c.P.x - 5, by + 2, c.P.x, by + 9); ctx.fill();
     if (gy != null) {
       ctx.beginPath(); ctx.ellipse(c.P.x, gy - 1, 4, 1.6, 0, 0, Math.PI * 2); ctx.fill();
     }
@@ -919,6 +921,27 @@
       const dir = Math.sign(c.P.x - ref) || 1;
       ctx.beginPath(); ctx.moveTo(c.P.x, ay); ctx.lineTo(c.P.x - dir * 6, ay - 4); ctx.lineTo(c.P.x - dir * 6, ay + 4); ctx.closePath(); ctx.fill();
       ctx.beginPath(); ctx.moveTo(ref, ay - 5); ctx.lineTo(ref, ay + 5); ctx.stroke();
+    }
+    // switch opportunity: the shoe the body already hangs past glows with ⇄
+    if (pl.length === 2 && game.state === 'play') {
+      for (let i = 0; i < 2; i++) {
+        const pv = S.tapPreview(game, i);
+        const L = c.legs[i];
+        if (pv.kind === 'switch') {
+          const pulse = 1 + Math.sin(t * 7) * 0.12;
+          ctx.strokeStyle = COL.leg[i]; ctx.lineWidth = 3;
+          ctx.beginPath(); ctx.ellipse(L.foot.x + 3, L.foot.y, 22 * pulse, 7 * pulse, 0, 0, Math.PI * 2); ctx.stroke();
+          bubble(ctx, L.foot.x + 3, L.foot.y + 20, '⇄', COL.leg[i]);
+        } else if (pv.kind === 'release') {
+          // the *other* shoe would let go if this leg pushes again
+          const O = c.legs[1 - i];
+          ctx.fillStyle = '#e8455a';
+          ctx.font = '14px ' + FONT; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.globalAlpha = 0.6 + 0.4 * Math.sin(t * 9);
+          ctx.fillText('!', O.foot.x + 3, O.foot.y - 26);
+          ctx.globalAlpha = 1;
+        }
+      }
     }
     ctx.restore();
   }

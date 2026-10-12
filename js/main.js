@@ -102,6 +102,7 @@
     for (const e of game.events) {
       switch (e.type) {
         case 'pump': {
+          if (e.src === 'none') break;
           SND.sfx.pump(e.leg, e.planted, e.f);
           if (e.src === 'leg') SND.sfx.shrink(1 - e.leg);
           if (e.planted && Math.random() < 0.35) SND.sfx.hup();
@@ -261,6 +262,7 @@
     const F = c.legs.find((L) => !L.planted && L.target && !L.target.none);
     if (face.mood === 'worry' || face.mood === 'panic') { lx = Math.sign(ck.s) || 1; ly = -1; }
     else if (F) { const dx = F.target.x - c.P.x, dy = F.target.y - c.P.y; const d = Math.hypot(dx, dy) || 1; lx = dx / d; ly = dy / d; }
+    else if (clock % 6 > 4.6) { lx = 0.2; ly = -1; } // idle: a nervous glance up at the cake
     face.lookX += (lx - face.lookX) * Math.min(1, dt * 8);
     face.lookY += (ly - face.lookY) * Math.min(1, dt * 8);
   }
@@ -500,6 +502,9 @@
     if (pr > 0) { ctx.fillStyle = 'rgba(255,255,255,' + pr * 0.35 + ')'; R.rr(ctx, 0, pr * 3, r.w, r.h - 4, 20); ctx.fill(); }
     ctx.fillStyle = 'rgba(255,255,255,0.35)';
     R.rr(ctx, 10, 6 + pr * 3, r.w - 20, 8, 4); ctx.fill();
+    // content is laid out for ~112px tall buttons; shrink it on short screens
+    const k = Math.min(1, (r.h - 6) / 112);
+    if (k < 1) { ctx.translate(r.w / 2, 2); ctx.scale(k, k); ctx.translate(-r.w / 2, 0); }
     // label
     ctx.fillStyle = '#fff'; ctx.font = '20px ' + FONT; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.lineWidth = 4; ctx.strokeStyle = COL.legDark[i]; ctx.lineJoin = 'round';
@@ -634,7 +639,7 @@
         for (let i = 0; i < 4; i++) S.physicsStep(demo, CFG.dt, false);
         demo.events.length = 0;
         const t = { x: demo.char.P.x + 20, y: demo.char.P.y - 20 };
-        cam.x += (t.x - cam.x) * 0.05; cam.y += (t.y - cam.y) * 0.05; cam.scale = view.W / 300;
+        cam.x += (t.x - cam.x) * 0.05; cam.y += (t.y - cam.y) * 0.05; cam.scale = view.W / 300 * Math.min(1, view.H / 820);
         face.mood = 'idle'; face.lookX = 1;
       }
     } else if (screen === 'pause') {
@@ -737,6 +742,9 @@
     } else if (screen === 'pause' && (k === 'Escape' || k === 'p' || k === 'P')) resume();
   });
   document.addEventListener('visibilitychange', () => { if (document.hidden && screen === 'play') showPause(); });
+  // iOS/Safari only unlock audio on certain gestures: try on all of them
+  ['touchend', 'click', 'keydown'].forEach((ev) => document.addEventListener(ev, () => SND.init(), { passive: true }));
+  document.addEventListener('contextmenu', (e) => e.preventDefault());
 
   function showIntro(def) {
     const el = document.getElementById('intro');
@@ -782,7 +790,7 @@
       platforms: [{ x: -400, y: 0, w: 2000, kind: 'biscuit' }],
       goal: null,
     });
-    cam.x = 40; cam.y = -100; cam.scale = view.W / 300;
+    cam.x = 40; cam.y = -100; cam.scale = view.W / 300 * Math.min(1, view.H / 820);
   }
 
   function showTitle() {

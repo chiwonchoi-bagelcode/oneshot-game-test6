@@ -27,7 +27,7 @@
     maxBeyond: 0.72,
     liftEps: 0.04,
     maxMirror: 1.2,
-    aimRate: 9, swingCost: 4,
+    aimRate: 9, swingCost: 4, swingSteps: 2,
     extendRate: 13,
     // torso
     leanScale: 170, thetaMax: 0.62,
@@ -293,9 +293,14 @@
     if (pv.kind === 'switch') liftLeg(g, O, 'switch');
     // pushing would carry the body past (or drain) the other shoe -> it lets go now
     else if (pv.kind === 'release') liftLeg(g, O, pv.why === 'empty' ? 'fold' : 'pop');
-    let src;
+    let src = null;
     if (c.pool > 0) { c.pool -= 1; src = 'pool'; }
-    else { O.f -= 1; src = 'leg'; }
+    else if (O.f > 0) { O.f -= 1; src = 'leg'; }
+    if (!src) {
+      // a bare switch with nothing left to pump: the shoe change still happens
+      emit(g, { type: 'pump', leg: i, planted: L.planted, f: L.f, other: O.f, otherPlanted: O.planted, src: 'none', kind: pv.kind });
+      return 'switch';
+    }
     L.f += 1;
     L.hold = CFG.flowDelay;
     L.pushT = 0.35;
@@ -354,16 +359,22 @@
     };
     // The leg swings mirrored to the support; if that line finds nothing soon it
     // sweeps nearby angles. Cost = taps needed + how far it has to swing.
-    let res = null, bestCost = Infinity;
-    for (let s = 0; s <= 10; s++) {
-      for (const sg of s === 0 ? [1] : [1, -1]) {
-        const off = sg * s * 0.09;
-        const r = tryOff(off);
-        if (!r) continue;
-        let cost = r.k + Math.abs(off) * CFG.swingCost;
-        if (Math.abs(off - F.aimOff) < 1e-6) cost -= 0.4; // stay with the current choice
-        if (cost < bestCost) { bestCost = cost; res = r; }
+    // Only a small swing is normal; the wide sweep is a last resort so the toy
+    // can never get stuck with nowhere to put its foot.
+    let res = null;
+    for (const maxS of [CFG.swingSteps, 10]) {
+      let bestCost = Infinity;
+      for (let s = 0; s <= maxS; s++) {
+        for (const sg of s === 0 ? [1] : [1, -1]) {
+          const off = sg * s * 0.09;
+          const r = tryOff(off);
+          if (!r) continue;
+          let cost = r.k + Math.abs(off) * CFG.swingCost;
+          if (Math.abs(off - F.aimOff) < 1e-6) cost -= 0.4; // stay with the current choice
+          if (cost < bestCost) { bestCost = cost; res = r; }
+        }
       }
+      if (res) break;
     }
     if (!res) return { none: true, ks, off: 0 };
     // foot path for preview: the leg aims straight at the landing spot
