@@ -127,7 +127,7 @@
       for (let i = 0; i < 3; i++) tone(t + 0.05 + i * 0.04, 0.05, 500 + Math.random() * 500, 900 + Math.random() * 600, 'sine', 0.06);
       // rubbery stretch: pitch follows the resulting length
       const p = 320 + (f || 5) * 45;
-      const o = tone(t + 0.06, 0.22, p * 0.8, p * 1.25, 'sawtooth', planted ? 0.06 : 0.045, { lp: 1400, q: 6, glide: 0.18 });
+      tone(t + 0.06, 0.22, p * 0.8, p * 1.25, 'sawtooth', planted ? 0.06 : 0.045, { lp: 1400, q: 6, glide: 0.18 });
     },
     shrink(leg) { if (!ok()) return; const t = now() + 0.02; tone(t, 0.16, 520, 300, 'sawtooth', 0.07, { lp: 1000, q: 5 }); },
     full(planted) {

@@ -883,10 +883,7 @@
     if (!pl.length) return;
     ctx.save();
     // support span bar
-    let lo, hi, y;
     if (pl.length === 2) {
-      lo = Math.min(pl[0].foot.x, pl[1].foot.x); hi = Math.max(pl[0].foot.x, pl[1].foot.x);
-      y = Math.max(pl[0].foot.y, pl[1].foot.y);
       ctx.strokeStyle = 'rgba(58,165,154,0.55)';
       ctx.lineWidth = 3;
       ctx.setLineDash([2, 5]);

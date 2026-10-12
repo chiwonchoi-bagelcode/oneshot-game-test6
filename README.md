@@ -65,6 +65,7 @@
   - `solve.js` 빔 탐색으로 스테이지가 클리어 가능한지 검증: `node tools/solve.js 4 200 0.7`
   - `replay.js` 탭 순서 재생 추적, `film.js` 실제 브라우저로 재생해 콘택트 시트 생성
   - `shot.js` Playwright 스모크 테스트/스크린샷, `audiocheck.js` 효과음 레벨 점검
+  - `e2e.js` 실제 브라우저에서 탭 경로로 스테이지를 실시간 플레이, `naive.js` 정해진 리듬만으로 깰 수 있는지 점검
   - `build-font.py` 게임에 쓰인 글자만 담은 글꼴 부분 집합 재생성
 
 모든 스테이지는 `tools/solve.js`로 0.45초/탭과 0.7초/탭 속도 모두에서 장식 3개를 지킨 채

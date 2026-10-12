@@ -496,7 +496,12 @@
       const dx = Math.sin(F.dirA), dy = Math.cos(F.dirA);
       const hit = raycast(lv, c.P.x, c.P.y, dx, dy, want);
       if (hit) {
-        if (hit.top && canPlant && dy > 0.05) { plantLeg(g, F, hit); continue; }
+        if (hit.top && canPlant && dy > 0.05) {
+          // touching the platform the preview pointed at lands exactly on the shown spot
+          if (tg && hit.rect === tg.rect && Math.abs(hit.x - tg.x) < 14) plantLeg(g, F, { x: tg.x, y: tg.y, rect: tg.rect });
+          else plantLeg(g, F, hit);
+          continue;
+        }
         want = Math.max(10, hit.t - 2);
       }
       F.len = want;

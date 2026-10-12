@@ -123,6 +123,7 @@
           fx.parts.push({ x: e.x + 2, y: e.y, vx: 0, vy: 0, g: 0, life: 0.45, age: 0, size: 14, col: COL.leg[e.leg], shape: 'ring' });
           addText(e.x + 4, e.y - 30, '착!', COL.legDark[e.leg], 20, (Math.random() - 0.5) * 0.3);
           fx.shake = Math.max(fx.shake, 0.25);
+          c.cake.squash = Math.max(c.cake.squash, 0.35); // the soft cake squishes on touchdown
           break;
         }
         case 'fold':
@@ -294,10 +295,6 @@
     cam.x += (t.x - cam.x) * k; cam.y += (t.y - cam.y) * k;
     cam.scale += (t.scale - cam.scale) * (1 - Math.exp(-dt * 2));
     if (!drag.active) { cam.panHold -= dt; if (cam.panHold <= 0) cam.panX *= Math.exp(-dt * 3); }
-  }
-  function worldToScreen(x, y) {
-    const cy = view.hudH + (view.sceneH - view.hudH) / 2;
-    return { x: (x - cam.x - cam.panX) * cam.scale + view.W / 2, y: (y - cam.y) * cam.scale + cy };
   }
   function screenToWorld(x, y) {
     const cy = view.hudH + (view.sceneH - view.hudH) / 2;
